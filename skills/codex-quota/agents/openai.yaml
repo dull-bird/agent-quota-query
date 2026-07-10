@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Quota"
+  short_description: "Check Codex rolling limits and credit balance"
+  default_prompt: "Use $codex-quota to check my current Codex quota and reset times."
