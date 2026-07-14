@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenClaw Usage Trends"
+  short_description: "Track agent quota trends and forecast exhaustion"
+  default_prompt: "Use $openclaw-usage-trends to collect and forecast my local agent quota usage."

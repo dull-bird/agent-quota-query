@@ -9,25 +9,52 @@ under `skills/` over time.
 | Skill | Purpose |
 | --- | --- |
 | [`codex-quota`](skills/codex-quota/) | Check Codex rolling limits, reset times, optional credits, and model-specific buckets. |
+| [`antigravity-quota`](skills/antigravity-quota/) | Check Antigravity (agy) CLI model quota via pexpect `/usage` interaction. |
+| [`kimi-quota`](skills/kimi-quota/) | Check Kimi Code quota via kimi CLI `/usage` (preferred) or opencli browser fallback. |
+| [`openclaw-usage-trends`](skills/openclaw-usage-trends/) | Persist Codex + Antigravity + Kimi quota and OpenClaw cron snapshots, then forecast rolling-window exhaustion. |
 
-## Run the Codex query directly
+## Quick Start
 
-Requires Python 3 and an authenticated Codex CLI:
+### Codex
 
 ```text
 python skills/codex-quota/scripts/query_codex_quota.py
 python skills/codex-quota/scripts/query_codex_quota.py --json
 ```
 
-On Windows, use the Python launcher if needed:
+### Antigravity
 
 ```text
-py -3 skills/codex-quota/scripts/query_codex_quota.py --json
+python skills/antigravity-quota/scripts/agquota.py
+python skills/antigravity-quota/scripts/agquota.py --json
 ```
 
-The script resolves both ordinary executables and Windows command shims. It
-starts an ephemeral local `codex app-server`, calls only the read-only
-`account/rateLimits/read` method, and never reads or prints stored credentials.
+Requires `pexpect` (`pip install pexpect`) and the `agy` CLI authenticated.
+
+### Kimi Code
+
+```text
+python skills/kimi-quota/scripts/kimi_quota.py
+python skills/kimi-quota/scripts/kimi_quota.py --json
+```
+
+Primary: `kimi` CLI via pexpect (`pip install pexpect`).  
+Fallback: `opencli` browser extraction (`--force-opencli`).
+
+### Usage Trends (all providers)
+
+```text
+python skills/openclaw-usage-trends/scripts/usage_trends.py collect   # snapshot now
+python skills/openclaw-usage-trends/scripts/usage_trends.py report    # view trends
+```
+
+Automated via OpenClaw `command` cron (no LLM tokens consumed):
+
+```text
+openclaw cron add --name agent-quota-collect --every 6h \
+  --command "python3 /path/to/agent-quota-query/skills/openclaw-usage-trends/scripts/usage_trends.py collect" \
+  --command-cwd /path/to/agent-quota-query
+```
 
 ## Install the Skill
 
@@ -45,8 +72,17 @@ skills/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   └── scripts/
-└── another-agent-quota/
+├── antigravity-quota/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── scripts/
+├── kimi-quota/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── scripts/
+└── openclaw-usage-trends/
     ├── SKILL.md
+    ├── agents/openai.yaml
     └── scripts/
 ```
 
@@ -65,14 +101,11 @@ python -m unittest discover -s tests -v
 On Windows, `py -3 -m unittest discover -s tests -v` is an equivalent fallback.
 
 ## Compatibility
+## Compatibility
 
-- Windows 10/11, macOS, and Linux
-- Python 3.9 or newer
-- Codex CLI with the app-server v2 rate-limit method (verified with Codex CLI
-  0.144.1)
-
-The app-server protocol is experimental. If a future Codex release changes the
-method, use Codex Settings > Usage while this Skill is updated.
-
-OpenAI's current user-facing guidance is available in
-[Using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-chatgpt).
+- Linux, macOS, and Windows
+- Python 3.9+
+- Codex CLI with the app-server v2 rate-limit method
+- Antigravity CLI (`agy`) 1.1+ with `pexpect`
+- Kimi Code CLI 0.23+ with `pexpect`, or opencli browser session
+- OpenClaw CLI for cron-based automated collection

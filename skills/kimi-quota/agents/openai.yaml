@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kimi Quota"
+  short_description: "Check Kimi Code quota and usage via browser"
+  default_prompt: "Use $kimi-quota to check my current Kimi Code quota and rate limits."

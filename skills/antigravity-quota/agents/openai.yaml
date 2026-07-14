@@ -1,0 +1,4 @@
+interface:
+  display_name: "Antigravity Quota"
+  short_description: "Check Antigravity AI model quota and token balance"
+  default_prompt: "Use $antigravity-quota to check my current Antigravity quota and remaining limits."
